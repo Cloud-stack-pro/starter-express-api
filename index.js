@@ -59,10 +59,10 @@ client.post("/api/v1/server", async ( req, res ) => {
         return !0
     } else if ( req.body['state']?.toUpperCase() == "SET" && typeof req.body['data'] == "object" ) {
         let token = uid.generate();
-        if ( !req.body['data'].token ) {
-            req.body['data'].token = token;
+        if ( !req.body['data'].slimedb_key_token ) {
+            req.body['data'].slimedb_key_token = token;
         } else {
-            token = req.body['data'].token;
+            token = req.body['data'].slimedb_key_token;
         }
         const database = ref( firebase( req.body['databaseURL'] ), req.body['databasePATH'] + `/${token}` );
         await set( database, req.body['data'] ).then( snapshots => {
@@ -79,8 +79,13 @@ client.post("/api/v1/server", async ( req, res ) => {
         return !0
     } else if ( req.body['state']?.toUpperCase() == "DEL" && typeof req.body['remove'] == "object" ) {
         let fullpath = req.body['databasePATH'];
-        if ( req.body['remove'].token ) {
-            fullpath += `/${req.body['remove'].token}`;
+        if ( req.body['remove'].slimedb_key_token ) {
+            fullpath += `/${req.body['remove'].slimedb_key_token}`;
+        } else {
+            return res.status(404).json({
+                statusCode: 404,
+                remove: false
+            })
         }
         const database = ref( firebase( req.body['databaseURL'] ), fullpath );
         await remove( database ).then( snapshots => {
