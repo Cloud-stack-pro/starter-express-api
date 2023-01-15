@@ -1,5 +1,4 @@
 const { getDatabase, ref, get, set, remove } = require("firebase/database");
-const TokenGenerator = require("uuid-token-generator");
 const { initializeApp } = require("firebase/app");
 const express = require("express");
 const cors = require("cors");
@@ -32,9 +31,6 @@ firebase.exists = async function( databaseURL ) {
     }
 }
 
-const uid = new TokenGenerator(512, TokenGenerator.BASE62);
-
-// make new
 client.post("/api/v1/server", async ( req, res ) => {
     const isFirebase = await firebase.exists( req.body['databaseURL'] || "https://google.com" );
     if ( !isFirebase || !req.body['databaseURL'] || !req.body['databasePATH'] || !req.body['state'] ) return res.status(404).render("error");
@@ -58,7 +54,7 @@ client.post("/api/v1/server", async ( req, res ) => {
         })
         return !0
     } else if ( req.body['state']?.toUpperCase() == "SET" && typeof req.body['data'] == "object" ) {
-        let token = uid.generate();
+        let token = new Date().getTime();
         if ( !req.body['data'].slimedb_key_token ) {
             req.body['data'].slimedb_key_token = token;
         } else {
