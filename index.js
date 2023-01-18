@@ -15,10 +15,10 @@ client.set( "views", path.join( __dirname, "public" ) );
  * @param { String } databaseURL
  * @return { void }
  **/
-function firebase( databaseURL ) {
-    const application = initializeApp({
-        databaseURL: databaseURL
-    });
+function firebase( database ) {
+    const application = typeof database === "string" ? initializeApp({
+        databaseURL: database
+    }) : initializeApp( database );
     return getDatabase( application );
 }
 firebase.exists = async function( databaseURL ) {
